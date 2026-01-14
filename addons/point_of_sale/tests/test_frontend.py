@@ -1088,10 +1088,87 @@ class TestUi(TestPointOfSaleHttpCommon):
     def test_07_product_combo(self):
         self.env['decimal.precision'].search([('name', '=', 'Product Price')]).digits = 4
         setup_product_combo_items(self)
+        combo_product_sofa = self.env["product.template"].create(
+            {
+                "name": "Combo product Sofa",
+                "is_storable": True,
+                "available_in_pos": True,
+                "list_price": 40,
+            }
+        )
+        sofa_size_attribute = self.env['product.attribute'].create({
+            'name': 'Size',
+            'display_type': 'radio',
+            'create_variant': 'always',
+        })
+        sofa_color_attribute = self.env['product.attribute'].create({
+            'name': 'Color',
+            'display_type': 'radio',
+            'create_variant': 'always',
+        })
+        sofa_size_L = self.env['product.attribute.value'].create({
+            'name': 'L',
+            'attribute_id': sofa_size_attribute.id,
+        })
+        sofa_size_M = self.env['product.attribute.value'].create({
+            'name': 'M',
+            'attribute_id': sofa_size_attribute.id,
+        })
+        sofa_color_red = self.env['product.attribute.value'].create({
+            'name': 'red',
+            'attribute_id': sofa_color_attribute.id,
+        })
+        sofa_color_blue = self.env['product.attribute.value'].create({
+            'name': 'blue',
+            'attribute_id': sofa_color_attribute.id,
+        })
+
+        product_attribute_size = self.env['product.template.attribute.line'].create({
+            'product_tmpl_id': combo_product_sofa.id,
+            'attribute_id': sofa_size_attribute.id,
+            'value_ids': [Command.set([sofa_size_M.id, sofa_size_L.id])],
+
+        })
+        self.env['product.template.attribute.line'].create({
+            'product_tmpl_id': combo_product_sofa.id,
+            'attribute_id': sofa_color_attribute.id,
+            'value_ids': [Command.set([sofa_color_red.id, sofa_color_blue.id])],
+
+        })
+        product_attribute_size.product_template_value_ids[0].price_extra = 50
+        product_attribute_size.product_template_value_ids[1].price_extra = 100
+        self.sofa_combo = self.env["product.combo"].create(
+            {
+                "name": "Chairs Combo",
+                "combo_item_ids": [
+                    Command.create({
+                        "product_id": combo_product_sofa.product_variant_ids[0].id,
+                        "extra_price": 5,
+                    }),
+                    Command.create({
+                        "product_id": combo_product_sofa.product_variant_ids[1].id,
+                        "extra_price": 10,
+                    }),
+                ],
+            },
+        )
+        self.sofa_combo = self.env["product.product"].create(
+            {
+                "available_in_pos": True,
+                "list_price": 20,
+                "name": "Sofa Combo",
+                "type": "combo",
+                "uom_id": self.env.ref("uom.product_uom_unit").id,
+                "combo_ids": [
+                    Command.set([self.sofa_combo.id]),
+                ],
+            },
+        )
         self.office_combo.write({
             'lst_price': 50,
             'barcode': 'SuperCombo',
         })
+
         self.main_pos_config.with_user(self.pos_user).open_ui()
         self.start_pos_tour('ProductComboPriceTaxIncludedTour')
         order = self.env['pos.order'].search([])
@@ -1282,6 +1359,9 @@ class TestUi(TestPointOfSaleHttpCommon):
         self.start_tour("/pos/ui/%d" % self.main_pos_config.id, 'FiscalPositionNoTaxRefund', login="pos_user")
         order = self.env['pos.order'].search([])
         self.assertTrue(order[0].name == order[1].name + " REFUND")
+
+    def test_customer_display_popup(self):
+        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'customer_display_shows_qr_popup', login="pos_user")
 
     def test_lot_refund(self):
 
@@ -2990,6 +3070,7 @@ class TestUi(TestPointOfSaleHttpCommon):
 
     def test_order_invoice_search(self):
         self.main_pos_config.with_user(self.pos_user).open_ui()
+        self.pos_user.group_ids = [Command.link(self.env.ref('account.group_account_invoice').id)]
         self.start_tour("/pos/ui/%d" % self.main_pos_config.id, 'test_order_invoice_search', login="pos_user")
 
     def test_automatic_receipt_printing(self):
@@ -3327,6 +3408,36 @@ class TestUi(TestPointOfSaleHttpCommon):
         self.monitor_stand.tracking = 'lot'
         self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'test_lot_tracking_without_lot_creation', login="pos_user")
 
+    def test_refund_line_keep_attributes(self):
+        """
+        Tests that when refunding an order that has lines that are variants, the new line keeps
+        this variant and displays it.
+        """
+        product_test = self.env['product.product'].create({
+            'name': 'Donut',
+            'list_price': 10,
+            'available_in_pos': True,
+            'taxes_id': False,
+        })
+        attribute = self.env['product.attribute'].create({
+            'name': 'Flavor',
+            'create_variant': 'always',
+        })
+        attribute_value_1 = self.env['product.attribute.value'].create({
+            'name': 'Sugar',
+            'attribute_id': attribute.id,
+        })
+        attribute_value_2 = self.env['product.attribute.value'].create({
+            'name': 'Chocolate',
+            'attribute_id': attribute.id,
+        })
+        self.env['product.template.attribute.line'].create({
+            'product_tmpl_id': product_test.product_tmpl_id.id,
+            'attribute_id': attribute.id,
+            'value_ids': [(6, 0, [attribute_value_1.id, attribute_value_2.id])],
+        })
+        self.start_pos_tour("test_refund_line_keep_attributes")
+
     def test_orderline_merge_with_higher_price_precision(self):
         """ Test that orderline merging works correctly when product price has a higher precision than the currency. """
         self.env['decimal.precision'].search([('name', '=', 'Product Price')]).digits = 3
@@ -3346,6 +3457,10 @@ class MobileTestUi(TestUi):
     browser_size = '375x667'
     touch_enabled = True
     allow_inherited_tests_method = True
+
+    # Skip customer display web tests on mobile
+    def test_customer_display_popup(self):
+        return
 
 
 class TestTaxCommonPOS(TestPointOfSaleHttpCommon, TestTaxCommon):

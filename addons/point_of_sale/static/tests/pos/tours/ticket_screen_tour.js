@@ -10,6 +10,7 @@ import * as Dialog from "@point_of_sale/../tests/generic_helpers/dialog_util";
 import { inLeftSide } from "@point_of_sale/../tests/pos/tours/utils/common";
 import { registry } from "@web/core/registry";
 import * as OfflineUtil from "@point_of_sale/../tests/generic_helpers/offline_util";
+import * as ProductConfiguratorPopup from "@point_of_sale/../tests/pos/tours/utils/product_configurator_util";
 
 registry.category("web_tour.tours").add("TicketScreenTour", {
     steps: () =>
@@ -516,6 +517,17 @@ registry.category("web_tour.tours").add("test_order_invoice_search", {
             TicketScreen.selectFilter("Paid"),
             TicketScreen.search("Invoice Number", "00001"),
             TicketScreen.nthRowContains(1, "001", false),
+            Chrome.clickMenuOption("Close Register"),
+            {
+                content: `Select button close register`,
+                trigger: `button:contains(close register)`,
+                run: "click",
+                expectUnloadPage: true,
+            },
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            Chrome.clickOrders(),
+            TicketScreen.selectFilter("Paid"),
         ].flat(),
 });
 
@@ -587,5 +599,30 @@ registry.category("web_tour.tours").add("test_lot_refund_lower_qty", {
             {
                 trigger: ".info-list:contains('SN SN2')",
             },
+        ].flat(),
+});
+
+registry.category("web_tour.tours").add("test_refund_line_keep_attributes", {
+    steps: () =>
+        [
+            Chrome.startPoS(),
+            Dialog.confirm("Open Register"),
+            ProductScreen.clickDisplayedProduct("Donut"),
+            ProductConfiguratorPopup.pickRadio("Sugar"),
+            Dialog.confirm(),
+            ProductScreen.clickPayButton(),
+            PaymentScreen.clickPaymentMethod("Bank"),
+            PaymentScreen.clickValidate(),
+            ReceiptScreen.isShown(),
+            ReceiptScreen.clickNextOrder(),
+            ProductScreen.clickRefund(),
+            TicketScreen.selectOrder("001"),
+            ProductScreen.clickNumpad("1"),
+            TicketScreen.confirmRefund(),
+            PaymentScreen.clickBack(),
+            Order.hasLine({
+                productName: "Donut",
+                attributeLine: "Sugar",
+            }),
         ].flat(),
 });

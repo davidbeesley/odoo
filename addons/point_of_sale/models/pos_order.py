@@ -70,7 +70,8 @@ class PosOrder(models.Model):
         draft = True if order.get('state') == 'draft' else False
         pos_session = self.env['pos.session'].browse(order['session_id'])
         if pos_session.state == 'closing_control' or pos_session.state == 'closed':
-            order['session_id'] = self._get_valid_session(order).id
+            pos_session = self._get_valid_session(order)
+            order['session_id'] = pos_session.id
 
         if not order.get('source'):
             order['source'] = 'pos'
@@ -82,6 +83,9 @@ class PosOrder(models.Model):
                     "partner_id": False,
                     "to_invoice": False,
                 })
+
+        if not order.get('company_id'):
+            order['company_id'] = pos_session.config_id.company_id.id
 
         pos_order = False
         record_uuid_mapping = order.pop('relations_uuid_mapping', {})
@@ -276,7 +280,7 @@ class PosOrder(models.Model):
     def _get_pos_anglo_saxon_price_unit(self, product, partner_id, quantity):
         moves = self.filtered(lambda o: o.partner_id.id == partner_id)\
             .mapped('picking_ids.move_ids')\
-            .filtered(lambda m: m.is_valued and m.product_id.valuation == 'real_time')\
+            .filtered(lambda m: m.is_valued and m.product_id.valuation == 'real_time' and m.product_id.id == product.id)\
             .sorted(lambda x: x.date)
         return moves._get_price_unit()
 
@@ -1224,7 +1228,7 @@ class PosOrder(models.Model):
 
     def read_pos_data(self, data, config):
         # If the previous session is closed, the order will get a new session_id due to _get_valid_session in _process_order
-        account_moves = self.sudo().account_move | self.sudo().payment_ids.account_move_id
+        account_moves = self.sudo().account_move | self.sudo().payment_ids.account_move_id | self.sudo().session_move_id
         return {
             'pos.order': self._load_pos_data_read(self, config) if config else [],
             'pos.session': [],

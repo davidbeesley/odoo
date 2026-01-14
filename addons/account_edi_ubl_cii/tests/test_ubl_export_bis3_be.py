@@ -217,6 +217,32 @@ class TestUblExportBis3BE(TestUblBis3Common, TestUblCiiBECommon):
         self._generate_invoice_ubl_file(invoice)
         self._assert_invoice_ubl_file(invoice, 'test_invoice_fixed_tax_emptying_turned_as_extra_invoice_lines')
 
+    def test_invoice_custom_tax_emptying_turned_as_extra_invoice_lines(self):
+        """ Ensure the emptying taxes (a.k.a 'vidange') are turned into extra invoice lines inside the xml. """
+        tax_emptying = self.python_tax("quantity * 0.10", name="Vidange")
+        tax_21 = self.percent_tax(21.0)
+        invoice = self._create_invoice(
+            partner_id=self.partner_be,
+            invoice_line_ids=[
+                self._prepare_invoice_line(
+                    product_id=self.product_a,
+                    price_unit=100.0,
+                    quantity=4.0,
+                    tax_ids=tax_emptying + tax_21,
+                ),
+                self._prepare_invoice_line(
+                    product_id=self.product_a,
+                    price_unit=100.0,
+                    quantity=1.0,
+                    tax_ids=tax_emptying + tax_21,
+                ),
+            ],
+            post=True,
+        )
+
+        self._generate_invoice_ubl_file(invoice)
+        self._assert_invoice_ubl_file(invoice, 'test_invoice_custom_tax_emptying_turned_as_extra_invoice_lines')
+
     def test_invoice_manual_tax_amount(self):
         tax_12 = self.percent_tax(12.0)
         tax_21 = self.percent_tax(21.0)
@@ -444,3 +470,22 @@ class TestUblExportBis3BE(TestUblBis3Common, TestUblCiiBECommon):
         wizard.action_send_and_print()
 
         self._assert_invoice_ubl_file(invoice, 'test_invoice_send_and_print_additional_documents')
+
+    def test_invoice_negative_discount_upsell(self):
+        """ Ensure a negative discount (upsell) is correctly handled as a Charge
+        with the appropriate UNCL 7161 reason code (ADK) instead of an Allowance.
+        """
+        tax_21 = self.percent_tax(21.0)
+        product = self._create_product(lst_price=10.0, taxes_id=tax_21)
+        invoice = self._create_invoice_one_line(
+            product_id=product,
+            quantity=10.0,
+            price_unit=5.76,
+            discount=-1.09,
+            partner_id=self.partner_be,
+            post=True,
+        )
+
+        self._generate_invoice_ubl_file(invoice)
+
+        self._assert_invoice_ubl_file(invoice, 'test_invoice_negative_discount_upsell')

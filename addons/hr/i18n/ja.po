@@ -11,14 +11,14 @@
 # Martin Trigaux, 2023
 # Ryoko Tsuda <ryoko@quartile.co>, 2023, 2025.
 # "Dylan Kiss (dyki)" <dyki@odoo.com>, 2025.
-# "Junko Augias (juau)" <juau@odoo.com>, 2025.
+# "Junko Augias (juau)" <juau@odoo.com>, 2025, 2026.
 # Weblate <noreply-mt-weblate@weblate.org>, 2025.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-26 18:35+0000\n"
-"PO-Revision-Date: 2025-12-24 10:24+0000\n"
+"POT-Creation-Date: 2026-01-09 18:37+0000\n"
+"PO-Revision-Date: 2026-01-08 04:19+0000\n"
 "Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-19/hr/ja/"
 ">\n"
@@ -437,7 +437,7 @@ msgstr "<span invisible=\"not contract_date_start\">から</span>"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_partner_bank_form_inherit_hr
 msgid "<span invisible=\"not employee_salary_amount_is_percentage\">%</span>"
-msgstr ""
+msgstr "<span invisible=\"not employee_salary_amount_is_percentage\">%</span>"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
@@ -741,7 +741,7 @@ msgstr "活動ステータス"
 #: model:ir.model.fields,field_description:hr.field_hr_employee__activity_type_icon
 #: model:ir.model.fields,field_description:hr.field_hr_version__activity_type_icon
 msgid "Activity Type Icon"
-msgstr "活動種別アイコン"
+msgstr "活動タイプアイコン"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_employee_list_activites_view
@@ -1427,8 +1427,8 @@ msgstr "キャンセル"
 #. module: hr
 #. odoo-python
 #: code:addons/hr/models/hr_version.py:0
-msgid "Cannot archive the only active record of an employee."
-msgstr "従業員の唯一のアクティブな記録をアーカイブできません。"
+msgid "Cannot archive all the active versions of an employee."
+msgstr ""
 
 #. module: hr
 #. odoo-python
@@ -1443,8 +1443,8 @@ msgstr ""
 #. module: hr
 #. odoo-python
 #: code:addons/hr/models/hr_version.py:0
-msgid "Cannot unassign the only active record of an employee."
-msgstr "従業員の唯一のアクティブなレコードの割り当てを解除できません。"
+msgid "Cannot unassign all the active versions of an employee."
+msgstr ""
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__certificate
@@ -3162,12 +3162,12 @@ msgstr "システムに関連"
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__is_trusted_bank_account
 msgid "Is Trusted Bank Account"
-msgstr ""
+msgstr "信頼できる銀行口座"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee_public__is_user
 msgid "Is User"
-msgstr ""
+msgstr "ユーザ"
 
 #. module: hr
 #: model_terms:hr.job,website_description:hr.job_cto
@@ -3472,7 +3472,7 @@ msgstr "既婚"
 #. odoo-python
 #: code:addons/hr/models/hr_employee.py:0
 msgid "Master"
-msgstr "マスター"
+msgstr "修士号"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_department__master_department_id
@@ -3601,7 +3601,7 @@ msgstr "新規契約"
 #. odoo-javascript
 #: code:addons/hr/static/src/components/versions_timeline/versions_timeline.xml:0
 msgid "New Employee Record"
-msgstr ""
+msgstr "新入従業員の記録"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_employee_view_graph
@@ -3669,7 +3669,7 @@ msgstr "テンプレートが見つかりません。"
 #. odoo-javascript
 #: code:addons/hr/static/src/components/versions_timeline/versions_timeline.js:0
 msgid "No contract"
-msgstr ""
+msgstr "契約なし"
 
 #. module: hr
 #: model_terms:hr.job,website_description:hr.job_consultant
@@ -3683,7 +3683,7 @@ msgstr "自由でフラットな職場環境、使いやすいツール、柔軟
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
 msgid "No user linked"
-msgstr ""
+msgstr "ユーザがリンクされていません"
 
 #. module: hr
 #: model_terms:hr.job,website_description:hr.job_consultant
@@ -3911,7 +3911,7 @@ msgstr "ソフトウェア製品に対する情熱"
 #: model:ir.model.fields,field_description:hr.field_hr_employee__passport_expiration_date
 #: model:ir.model.fields,field_description:hr.field_hr_version__passport_expiration_date
 msgid "Passport Expiration Date"
-msgstr ""
+msgstr "パスポートの有効期限"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__passport_id
@@ -3923,7 +3923,7 @@ msgstr "旅券番号"
 #: model_terms:ir.ui.view,arch_db:hr.hr_contract_template_form_view
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Pay Category"
-msgstr ""
+msgstr "給与カテゴリ"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
@@ -4464,12 +4464,12 @@ msgstr "社会保障番号"
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
 #: model_terms:ir.ui.view,arch_db:hr.view_partner_bank_form_inherit_hr
 msgid "Salary Allocation"
-msgstr ""
+msgstr "給与配分"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__salary_distribution
 msgid "Salary Distribution"
-msgstr ""
+msgstr "給与配分"
 
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_contract_template_form_view
@@ -4578,7 +4578,7 @@ msgstr "人事アイコンを表示"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.hr_version_search_view
 msgid "Show all records whose next activity date is past"
-msgstr ""
+msgstr "次回活動日が過去のすべてのレコードを表示"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__birthday_public_display
@@ -4666,7 +4666,7 @@ msgid ""
 "Planned: Future activities."
 msgstr ""
 "活動に基づくステータス\n"
-"遅延: 期限が既に過ぎています\n"
+"期限超過：期限日がすでに過ぎています\n"
 "今日: 活動日は今日です\n"
 "予定: 将来の活動。"
 
@@ -4882,7 +4882,7 @@ msgstr "従業員%sはユーザにリンクしている必要があります。"
 msgid ""
 "The employee is already in contract on %s. Please select a date outside "
 "existing contracts"
-msgstr ""
+msgstr "従業員は既に%s で契約中です。既存の契約期間外の日付を選択してください"
 
 #. module: hr
 #: model:ir.model.constraint,message:hr.constraint_hr_job_no_of_recruitment_positive
@@ -4909,7 +4909,7 @@ msgstr "以下のフィールドは%sにより修正されました"
 #. odoo-python
 #: code:addons/hr/wizard/hr_departure_wizard.py:0
 msgid "The following users have been archived: %s"
-msgstr ""
+msgstr "以下のユーザはアーカイブされました：%s"
 
 #. module: hr
 #. odoo-python
@@ -4918,6 +4918,8 @@ msgid ""
 "The following users have not been archived as they are still linked to "
 "another active employees: %s"
 msgstr ""
+"以下のユーザは、まだ別のアクティブな従業員と関連付けられているため、アーカイ"
+"ブされていません：%s"
 
 #. module: hr
 #. odoo-python
@@ -4972,6 +4974,7 @@ msgstr "この従業員はユーザを既に持っています。"
 #: code:addons/hr/models/hr_employee.py:0
 msgid "This field %(field_name)s doesn't exist on this model (hr.version)."
 msgstr ""
+"このフィールド%(field_name)s は、このモデル (hr.version) に存在しません。"
 
 #. module: hr
 #: model:ir.model.fields,help:hr.field_hr_employee__tz
@@ -5044,13 +5047,13 @@ msgstr "予測合計数"
 #. odoo-python
 #: code:addons/hr/wizard/hr_bank_account_wizard.py:0
 msgid "Total percentage allocation must equal 100%."
-msgstr ""
+msgstr "割り当てられた割合の合計は100％でなければなりません。"
 
 #. module: hr
 #. odoo-python
 #: code:addons/hr/models/hr_employee.py:0
 msgid "Total salary distribution on bank accounts must be exactly 100%."
-msgstr ""
+msgstr "銀行口座への給与配分の合計は、必ず100％でなければなりません。"
 
 #. module: hr
 #: model:hr.job,name:hr.job_trainee
@@ -5151,7 +5154,7 @@ msgstr "ユーザ"
 #. odoo-python
 #: code:addons/hr/wizard/hr_departure_wizard.py:0
 msgid "User Archive Notification"
-msgstr ""
+msgstr "ユーザアーカイブ通知"
 
 #. module: hr
 #. odoo-python
@@ -5162,7 +5165,7 @@ msgstr "ユーザ作成通知"
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_departure_wizard__is_user_employee
 msgid "User Employee"
-msgstr ""
+msgstr "ユーザ従業員"
 
 #. module: hr
 #. odoo-python
@@ -5179,7 +5182,7 @@ msgstr "従業員 %s には、同じメールアドレスのユーザが既に�
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__is_user_active
 msgid "User's active"
-msgstr ""
+msgstr "ユーザのアクティブ"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__user_partner_id
@@ -5227,7 +5230,7 @@ msgstr "バージョン数"
 #. module: hr
 #: model_terms:ir.ui.view,arch_db:hr.view_employee_form
 msgid "Visa & Work Permit"
-msgstr ""
+msgstr "ビザと就労許可"
 
 #. module: hr
 #: model:ir.model.fields,field_description:hr.field_hr_employee__visa_expire
@@ -5512,6 +5515,8 @@ msgid ""
 "You are not allowed to access \"Employee\" (hr.employee) records.\n"
 "We can redirect you to the public employee list."
 msgstr ""
+"「従業員」(hr.employee)レコードへのアクセスは許可されていません。\n"
+"公開従業員リストへ移動できます。"
 
 #. module: hr
 #. odoo-python
@@ -5550,6 +5555,8 @@ msgid ""
 "You cannot delete contact that are linked to an employee, please archive "
 "them instead."
 msgstr ""
+"従業員に関連付けられている連絡先は削除できません。代わりにアーカイブしてくだ"
+"さい。"
 
 #. module: hr
 #. odoo-python
@@ -5560,6 +5567,10 @@ msgid ""
 "\n"
 "Affected contact(s): %(names)s"
 msgstr ""
+"従業員に関連付けられている連絡先は削除できません。\n"
+"代わりにアーカイブしてください。\n"
+"\n"
+"影響を受ける連絡先：%(names)s"
 
 #. module: hr
 #. odoo-python
@@ -5682,7 +5693,7 @@ msgstr "登録された従業員にリンクした住所"
 #. odoo-python
 #: code:addons/hr/models/hr_employee.py:0
 msgid "bachelor"
-msgstr ""
+msgstr "大学卒"
 
 #. module: hr
 #. odoo-python
@@ -5748,7 +5759,7 @@ msgstr "例: myprivateemail@example.com"
 #. module: hr
 #: model:ir.model,name:hr.model_hr_mixin
 msgid "hr.mixin"
-msgstr ""
+msgstr "hr.mixin"
 
 #. module: hr
 #. odoo-python
@@ -5771,7 +5782,7 @@ msgstr "既婚"
 #. odoo-python
 #: code:addons/hr/models/hr_employee.py:0
 msgid "master"
-msgstr ""
+msgstr "修士号"
 
 #. module: hr
 #: model:ir.model.fields.selection,name:hr.selection__hr_version__distance_home_work_unit__miles
@@ -5782,7 +5793,7 @@ msgstr "mi"
 #. odoo-python
 #: code:addons/hr/models/hr_employee.py:0
 msgid "other"
-msgstr ""
+msgstr "その他"
 
 #. module: hr
 #. odoo-python
@@ -5806,6 +5817,12 @@ msgstr "勤務"
 #: model:ir.model.fields,field_description:hr.field_hr_employee__work_permit_name
 msgid "work_permit_name"
 msgstr "work_permit_name"
+
+#~ msgid "Cannot archive the only active record of an employee."
+#~ msgstr "従業員の唯一のアクティブな記録をアーカイブできません。"
+
+#~ msgid "Cannot unassign the only active record of an employee."
+#~ msgstr "従業員の唯一のアクティブなレコードの割り当てを解除できません。"
 
 #~ msgid "&amp;nbsp;"
 #~ msgstr "&amp;nbsp;"
