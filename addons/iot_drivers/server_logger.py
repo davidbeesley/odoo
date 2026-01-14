@@ -58,6 +58,21 @@ class AsyncHTTPHandler(logging.Handler):
 
     def _periodic_flush(self):
         odoo_session = requests.Session()
+
+        # Check if SSL verification should be disabled for this host
+        whitelist = helpers.get_conf('ssl_verify_whitelist') or ''
+        whitelist_hosts = [h.strip() for h in whitelist.split(',') if h.strip()]
+        if whitelist_hosts and self._odoo_server_url:
+            try:
+                from urllib.parse import urlparse
+                parsed = urlparse(self._odoo_server_url)
+                hostname = parsed.hostname or parsed.netloc.split(':')[0]
+                if hostname in whitelist_hosts:
+                    odoo_session.verify = False
+                    _logger.debug("Disabling SSL verification for server logger to whitelisted host: %s", hostname)
+            except Exception as e:
+                _logger.warning("Failed to check SSL whitelist for server logger: %s", e)
+
         while self._odoo_server_url and self._active:  # allow to exit the loop on thread.join
             time.sleep(self._FLUSH_INTERVAL)
             self._flush_logs(odoo_session)

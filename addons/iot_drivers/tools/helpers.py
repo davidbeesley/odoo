@@ -28,9 +28,11 @@ from odoo.addons.iot_drivers.tools.system import (
     IOT_CHAR,
     IOT_RPI_CHAR,
     IOT_WINDOWS_CHAR,
+    IOT_X86_CHAR,
     IS_RPI,
     IS_TEST,
     IS_WINDOWS,
+    IS_X86,
     mtr,
 )
 from odoo.tools.func import reset_cached_properties
@@ -116,7 +118,7 @@ if IS_WINDOWS:
         if path_nginx:
             _logger.info('Start Nginx server: %s\\nginx.exe', path_nginx)
             subprocess.Popen([str(path_nginx / 'nginx.exe')], cwd=str(path_nginx))
-elif IS_RPI:
+elif IS_RPI or IS_X86:
     def start_nginx_server():
         subprocess.check_call(["sudo", "service", "nginx", "restart"])
 else:
@@ -196,6 +198,11 @@ def get_ip():
     """Get the local IP address of the IoT Box by creating
     a dummy connection to the gateway or Google DNS.
     """
+    # Check for custom IP first (for Docker deployments)
+    custom_ip = get_conf('custom_ip')
+    if custom_ip:
+        return custom_ip
+
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect((get_gateway() or '8.8.8.8', 1))  # Google DNS
@@ -209,8 +216,39 @@ def get_ip():
 
 @cache
 def get_identifier():
+    # Check for custom identifier first (for Docker/virtualized deployments)
+    custom_identifier = get_conf('identifier')
+    if custom_identifier:
+        return custom_identifier
+
     if IS_RPI:
         return read_file_first_line('/sys/firmware/devicetree/base/serial-number').strip("\x00")
+    elif IS_X86:
+        # On x86 Linux, try to get machine-id or DMI product UUID
+        machine_id = read_file_first_line('/etc/machine-id')
+        if machine_id:
+            return machine_id
+
+        # Fallback to DMI product UUID
+        try:
+            result = subprocess.run(
+                ['cat', '/sys/class/dmi/id/product_uuid'],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                check=False
+            )
+            if result.returncode == 0 and result.stdout.strip():
+                return result.stdout.strip()
+        except Exception:
+            pass
+
+        # Last resort: generate and store identifier
+        identifier = get_conf('generated_identifier')
+        if not identifier:
+            identifier = secrets.token_hex()
+            update_conf({'generated_identifier': identifier})
+        return identifier
     elif IS_TEST:
         return 'test_identifier'
 
@@ -272,6 +310,9 @@ def get_version(detailed_version=False):
     elif IS_WINDOWS:
         # updated manually when big changes are made to the windows virtual IoT
         image_version = '23.11'
+    elif IS_X86:
+        # x86 version - can be set via config or defaults to Odoo version
+        image_version = get_conf('x86_version') or '1.0'
     elif IS_TEST:
         image_version = 'test'
 
@@ -312,6 +353,12 @@ def download_iot_handlers(auto=True, server_url=None):
     :param auto: If True, the download will depend on the parameter set in the database
     :param server_url: The URL of the connected Odoo database (provided by decorator).
     """
+    # Check if handler download is disabled
+    disable_download = get_conf('disable_handler_download')
+    if disable_download and disable_download.lower() in ('true', '1', 'yes'):
+        _logger.info('IoT handler download is disabled by configuration')
+        return
+
     etag = get_conf('iot_handlers_etag')
     try:
         response = requests.post(
@@ -374,16 +421,32 @@ def load_iot_handlers():
 def get_handlers_files_to_load(handler_path):
     """
     Get all handler files that an IoT system should load in a list.
-    - Rpi IoT boxes load file without suffixe and _L
+    - Rpi IoT boxes load file without suffix and _L
     - Windows IoT load file without suffixes and _W
+    - x86 IoT boxes load files without suffix and _X (and some _L files, excluding RPI-specific hardware)
     :param handler_path: The path to the directory containing the files (either drivers or interfaces)
     :return: files corresponding to the current IoT system
     :rtype list:
     """
     if IS_RPI:
-        return [x.name for x in Path(handler_path).glob(f'*[!{IOT_WINDOWS_CHAR}].*')]
+        return [x.name for x in Path(handler_path).glob(f'*[!{IOT_WINDOWS_CHAR}{IOT_X86_CHAR}].*')]
     elif IS_WINDOWS:
-        return [x.name for x in Path(handler_path).glob(f'*[!{IOT_RPI_CHAR}].*')]
+        return [x.name for x in Path(handler_path).glob(f'*[!{IOT_RPI_CHAR}{IOT_X86_CHAR}].*')]
+    elif IS_X86:
+        # x86 loads _X files and some _L files, but excludes RPI-specific hardware
+        # RPI-specific files that won't work on x86 (GPIO, display, camera, keyboard)
+        rpi_specific_excludes = [
+            'display_driver_L.py',
+            'display_interface_L.py',
+            'keyboard_usb_driver_L.py',
+            # Add more RPI-specific files as needed
+        ]
+
+        # Get all files that are not Windows-specific
+        all_files = [x.name for x in Path(handler_path).glob(f'*[!{IOT_WINDOWS_CHAR}].*')]
+
+        # Filter out RPI-specific hardware files
+        return [f for f in all_files if f not in rpi_specific_excludes]
     return []
 
 

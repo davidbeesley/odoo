@@ -4,7 +4,7 @@ import collections
 import odoo.http
 
 from odoo.http import JsonRPCDispatcher, serialize_exception
-from odoo.addons.iot_drivers.tools.system import IS_TEST
+from odoo.addons.iot_drivers.tools.system import IS_TEST, IS_X86
 from werkzeug.exceptions import Forbidden
 
 
@@ -34,6 +34,7 @@ class JsonRPCDispatcherPatch(JsonRPCDispatcher):
 
 if not IS_TEST:
     # Test IoT system is expected to handle Odoo database unlike "real" IoT systems.
+    # RPI, Windows, and x86 IoT systems run database-less.
 
     def db_list(force=False, host=None):
         return []

@@ -1,6 +1,6 @@
 import logging
 
-from odoo.addons.iot_drivers.tools.system import IS_RPI
+from odoo.addons.iot_drivers.tools.system import IS_RPI, IS_X86
 from odoo import http
 
 _logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ def iot_route(route=None, linux_only=False, **kwargs):
     http_decorator = http.route(route, **kwargs)
 
     def decorator(endpoint):
-        if linux_only and not IS_RPI:
+        if linux_only and not (IS_RPI or IS_X86):
             return None  # Remove the route if not Linux (will return 404)
         return http_decorator(endpoint)
 

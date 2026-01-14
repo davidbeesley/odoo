@@ -7,7 +7,7 @@ import time
 
 from odoo.addons.iot_drivers.main import iot_devices, manager
 from odoo.addons.iot_drivers.tools import helpers, upgrade, wifi
-from odoo.addons.iot_drivers.tools.system import IS_RPI, IS_TEST
+from odoo.addons.iot_drivers.tools.system import IS_RPI, IS_TEST, IS_X86
 
 _logger = logging.getLogger(__name__)
 

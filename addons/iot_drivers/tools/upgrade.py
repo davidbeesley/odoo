@@ -10,7 +10,7 @@ from odoo.addons.iot_drivers.tools.helpers import (
     toggleable,
     unlink_file,
 )
-from odoo.addons.iot_drivers.tools.system import rpi_only, IS_RPI, IS_TEST
+from odoo.addons.iot_drivers.tools.system import rpi_only, IS_RPI, IS_TEST, IS_X86
 
 _logger = logging.getLogger(__name__)
 
@@ -74,7 +74,8 @@ def check_git_branch(server_url=None):
 
     :param server_url: The URL of the connected Odoo database (provided by decorator).
     """
-    if IS_TEST:
+    if IS_TEST or IS_X86:
+        # Skip git branch upgrades for test and x86 systems
         return
     db_branch = get_db_branch(server_url)
     if not db_branch:

@@ -3,6 +3,7 @@
 from functools import wraps
 import requests
 import logging
+from urllib.parse import urlparse
 
 from . import server_logger
 from . import connection_manager
@@ -33,6 +34,24 @@ def set_default_options(func):
         db_name = tools.helpers.get_conf('db_name')
         if server_url and db_name and args[0].startswith(server_url) and '/web/login?db=' not in args[0]:
             headers['X-Odoo-Database'] = db_name
+
+        # Disable SSL verification for whitelisted hosts
+        if 'verify' not in kwargs:
+            whitelist = tools.helpers.get_conf('ssl_verify_whitelist') or ''
+            whitelist_hosts = [h.strip() for h in whitelist.split(',') if h.strip()]
+
+            if whitelist_hosts and args:
+                try:
+                    url = args[0]
+                    parsed = urlparse(url)
+                    hostname = parsed.hostname or parsed.netloc.split(':')[0]
+
+                    if hostname in whitelist_hosts:
+                        kwargs['verify'] = False
+                        _logger.debug("Disabling SSL verification for whitelisted host: %s", hostname)
+                except Exception as e:
+                    _logger.warning("Failed to parse URL for SSL whitelist check: %s", e)
+
         return func(*args, headers=headers, **kwargs)
 
     return wrapper

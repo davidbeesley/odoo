@@ -15,7 +15,7 @@ from odoo.addons.iot_drivers.tools.helpers import (
     start_nginx_server,
     update_conf,
 )
-from odoo.addons.iot_drivers.tools.system import IS_RPI, IS_TEST, IS_WINDOWS
+from odoo.addons.iot_drivers.tools.system import IS_RPI, IS_TEST, IS_WINDOWS, IS_X86
 
 _logger = logging.getLogger(__name__)
 

@@ -2,6 +2,7 @@ import json
 import logging
 import platform
 import requests
+import ssl
 import time
 import urllib.parse
 import websocket
@@ -175,6 +176,20 @@ class WebsocketClient(Thread):
             on_open=self.on_open, on_message=self.on_message,
             on_error=on_error, on_close=self.on_close)
 
+        # Check if SSL verification should be disabled for this host
+        sslopt = {}
+        whitelist = helpers.get_conf('ssl_verify_whitelist') or ''
+        whitelist_hosts = [h.strip() for h in whitelist.split(',') if h.strip()]
+        if whitelist_hosts:
+            try:
+                parsed = urllib.parse.urlparse(self.server_url)
+                hostname = parsed.hostname or parsed.netloc.split(':')[0]
+                if hostname in whitelist_hosts:
+                    sslopt = {"cert_reqs": ssl.CERT_NONE}
+                    _logger.debug("Disabling SSL verification for websocket to whitelisted host: %s", hostname)
+            except Exception as e:
+                _logger.warning("Failed to check SSL whitelist for websocket: %s", e)
+
         # The IoT synchronised servers can stop in 2 ways that we need to handle:
         #  A. Gracefully:
         #   In this case a disconnection signal is sent to the IoT-box
@@ -188,7 +203,7 @@ class WebsocketClient(Thread):
         #   is offline while attempting the new connection
         while True:
             try:
-                run_res = self.ws.run_forever(reconnect=10)
+                run_res = self.ws.run_forever(reconnect=10, sslopt=sslopt)
                 _logger.debug("websocket run_forever return with %s", run_res)
             except Exception:
                 _logger.exception("An unexpected exception happened when running the websocket")
