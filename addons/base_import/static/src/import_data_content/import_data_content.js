@@ -39,7 +39,8 @@ export class ImportDataContent extends Component {
 
     makeChoices(fields) {
         return fields.map((field) => ({
-            label: field.label,
+            // SCG: Show technical field name alongside display label
+            label: `${field.label} (${field.fieldPath})`,
             value: field.fieldPath,
             iconClass: `o_import_field_icon_${field.type}`,
         }));

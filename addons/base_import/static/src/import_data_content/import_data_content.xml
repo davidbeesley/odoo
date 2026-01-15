@@ -73,7 +73,7 @@
                                             t-att-data-tooltip-info="getTooltipDetails(column.fieldInfo)"
                                         ></i>
                                         <span class="ps-5">
-                                            <t t-esc="column.fieldInfo.label" />
+                                            <t t-esc="column.fieldInfo.label" /> <span class="text-muted small">(<t t-esc="column.fieldInfo.fieldPath" />)</span>
                                         </span>
                                     </t>
                                     <span t-else="" class="text-warning">To import, select a field...</span>
